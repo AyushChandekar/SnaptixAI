@@ -39,23 +39,23 @@ class TranscriptionService:
             transcript = None
             confidence = 0.85
             
-            # Method 1: OpenAI Whisper API (if available)
-            if self.openai_api_key:
-                try:
-                    transcript = await self._transcribe_openai(audio_path)
-                    confidence = 0.95
-                    logger.info("Used OpenAI Whisper for transcription")
-                except Exception as e:
-                    logger.warning(f"OpenAI transcription failed: {e}")
-            
-            # Method 2: HuggingFace API (if available and OpenAI failed)
-            if not transcript and self.huggingface_api_key:
+            # Method 1: HuggingFace API (free, try first)
+            if self.huggingface_api_key:
                 try:
                     transcript = await self._transcribe_huggingface(audio_path)
                     confidence = 0.90
                     logger.info("Used HuggingFace for transcription")
                 except Exception as e:
                     logger.warning(f"HuggingFace transcription failed: {e}")
+            
+            # Method 2: OpenAI Whisper API (if HuggingFace failed and available)
+            if not transcript and self.openai_api_key:
+                try:
+                    transcript = await self._transcribe_openai(audio_path)
+                    confidence = 0.95
+                    logger.info("Used OpenAI Whisper for transcription")
+                except Exception as e:
+                    logger.warning(f"OpenAI transcription failed: {e}")
             
             # Method 3: Mock transcription for demo (fallback)
             if not transcript:
