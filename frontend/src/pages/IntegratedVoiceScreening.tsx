@@ -30,9 +30,11 @@
       checkBackendHealth();
     }, []);
 
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
     const checkBackendHealth = async () => {
       try {
-        const response = await fetch('http://localhost:8000/health');
+        const response = await fetch(`${API_BASE_URL}/health`);
         setBackendHealth(response.ok);
       } catch (error) {
         setBackendHealth(false);
@@ -106,7 +108,7 @@
       const formData = new FormData();
       formData.append('audio', audioBlob, 'recording.wav');
       
-      const response = await fetch('http://localhost:8000/transcribe', {
+      const response = await fetch(`${API_BASE_URL}/transcribe`, {
         method: 'POST',
         body: formData
       });
@@ -119,7 +121,7 @@
     };
 
     const analyzeTranscript = async (transcript: string, metadata: any) => {
-      const response = await fetch('http://localhost:8000/analyze', {
+      const response = await fetch(`${API_BASE_URL}/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
